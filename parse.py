@@ -28,15 +28,15 @@ def parse(orgstring,pivar,pcvar,evar,rd_files,orgnum,base_dir,unwanted):
         new_data.to_csv(file.split('vs',1)[0]+'_occ.csv',header=False,index=False)
 
         #remove organism that are unwanted
-        # if unwanted == True:
-        #     sub_list = new_data['subject'].tolist()
-        #     orgindex = []
-        #     for sub in sub_list:
-        #         for orgname in orgstring:
-        #             if orgname in sub:
-        #                 orgindex.append(new_data[new_data['subject'] == sub].index[0])
-        #
-        #     new_data = new_data.ix[orgindex]
+        if unwanted == True:
+            sub_list = new_data['subject'].tolist()
+            orgindex = []
+            for sub in sub_list:
+                for orgname in orgstring:
+                    if orgname in sub:
+                        orgindex.append(new_data[new_data['subject'] == sub].index[0])
+
+            new_data = new_data.ix[orgindex]
 
         #Create output list with each gene matching the best gene from the other genomes
         print('Compiling shared genes')
