@@ -8,7 +8,7 @@ from shared import shared
 from gnames import gnames
 startTime = datetime.now()
 
-print('geneparser v1.6')
+print('geneparser v1.62')
 print(' ')
 
 # check for numpy and pandas modules
