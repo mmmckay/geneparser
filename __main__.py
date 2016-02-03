@@ -58,21 +58,26 @@ print('Percent coverage cutoff set at ',pcvar)
 print('Expected value cutoff set at ',evar)
 print('')
 
+#run sort
 rd_files, orgnum, gn_file, data_dir, base_dir = sort(startTime)
 print(datetime.now()-startTime)
 print('')
 
+#find common substrings
 orgstring = gene_lcs(rd_files,base_dir)
 print(datetime.now()-startTime)
 print('')
 
+#parse for shared genes
 parse(orgstring,pivar,pcvar,evar,rd_files,orgnum,base_dir,unwanted)
 print(datetime.now()-startTime)
 print('')
 
+#find shared genes
 output = shared(orgnum,base_dir)
 print(datetime.now()-startTime)
 print('')
 
+#make shared gene name files
 gnames(orgnum,orgstring,base_dir,output)
 print('Parsing finished in',datetime.now()-startTime)
