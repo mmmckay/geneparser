@@ -19,9 +19,9 @@ NO COLUMN HEADERS in input data
 The gene db_xref should be the same format as the names appearing in the 'query' and 'subject' columns of the rawdata file
 
 Run with
-$ python3 geneparser.zip 75 100 .0001
+$ python3 geneparser.py 75 100 .0001
 
-The numbers specify percent identity, percent coverage and e-value
+The numbers specify percent identity, percent coverage and e-value cutoffs
 
 Additonal commands
 -unw Specifies that the user has included only some of the files from the vsAll BLAST
