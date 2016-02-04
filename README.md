@@ -13,9 +13,7 @@ Naming convention ex: S204vsAll.csv for the S204 genome
 Genename columns are 'Gene Name', 'Gene db_xref', 'Amino acid string for gene'  
 Naming convention ex: S204_genes.csv for the S204 genome  
 
----  
-NO COLUMN HEADERS in input data  
----  
+NO COLUMN HEADERS in input data    
 
 The gene db_xref should be the same format as the names appearing in the 'query' and 'subject' columns of the rawdata file  
 
