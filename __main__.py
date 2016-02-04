@@ -44,6 +44,8 @@ except ValueError:
     print('Expected value must be a number greater than 0')
     sys.exit()
 
+#Add extra commands here
+#for designating fewer than full BLAST of files
 if '-unw' in sys.argv:
     unwanted = True
 else:
