@@ -22,4 +22,5 @@ $ python3 geneparser.py 75 100 .0001
 The numbers specify percent identity, percent coverage and e-value cutoffs  
 
 Additonal commands  
--unw Specifies that the user has included only some of the files from the vsAll BLAST  
+-unw Specifies that the user has included only some of the files from the vsAll BLAST 
+-v Verbose command, only shows which gene xrefs don't have names associated at the moment
