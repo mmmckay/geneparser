@@ -5,7 +5,6 @@ import glob
 import sys
 from multiprocessing import Pool as ThreadPool
 from itertools import repeat
-import argparse
 
 #Functions
 def long_substr(data):
@@ -24,6 +23,44 @@ def extract(genome,base_dir):
         odata=np.array(m).astype('object')
     string = long_substr(odata[1:,0])
     return string
+def name_parse(file, shared_file, orgnum, base_dir):
+    #fix sequence names
+    os.chdir(base_dir+'genenames/')
+    name_data = pd.read_csv(file)
+    name_data.columns = ['gene', 'sequence', 'amino']
+    fixed_names = []
+    for name in name_data['sequence'].tolist():
+        name = name.replace('SEED:','')
+        fixed_names.append(name.replace(' ','_'))
+    name_data['sequence'] = fixed_names
+
+    #put together separate amino acid name files
+    for n in range(orgnum):
+        if shared_file[n].tolist()[0] in name_data['sequence'].tolist():
+            column = n
+
+    aminos = []
+    names = []
+    sequence_names = shared_file[column].tolist()
+    name_set = name_data['sequence'].tolist()
+    missing_names = 0
+    for name in sequence_names:
+        if name in name_set:
+            aminos.append(name_data[name_data['sequence'] == name]['amino'].tolist()[0])
+            names.append(name_data[name_data['sequence'] == name]['gene'].tolist()[0])
+        else:
+            if verbose:
+                print('No data in name file for',name)
+            aminos.append('No data')
+            names.append('No data')
+            missing_names += 1
+
+    os.chdir(base_dir+'output/')
+    output = pd.DataFrame({'gene':names,'sequence':sequence_names,'amino':aminos},index=np.arange(len(aminos)))
+    output = output[['gene','sequence','amino']]
+    output.to_csv(file.split('genes',1)[0]+'_aminos.csv',header=False,index=False)
+
+    return aminos, names, column
 
 #Sort method
 def sort(startTime):
@@ -261,45 +298,12 @@ def gnames(orgnum,orgstring,base_dir,input):
     all_amino = []
     col_order = []
 
-    for file in name_files:
-        #fix sequence names
-        os.chdir(base_dir+'genenames/')
-        name_data = pd.read_csv(file)
-        name_data.columns = ['gene', 'sequence', 'amino']
-        fixed_names = []
-        for name in name_data['sequence'].tolist():
-            name = name.replace('SEED:','')
-            fixed_names.append(name.replace(' ','_'))
-        name_data['sequence'] = fixed_names
-
-        #put together separate amino acid name files
-        for n in range(orgnum):
-            if shared_file[n].tolist()[0] in name_data['sequence'].tolist():
-                column = n
-
-        aminos = []
-        names = []
-        sequence_names = shared_file[column].tolist()
-        name_set = name_data['sequence'].tolist()
-        missing_names = 0
-        for name in sequence_names:
-            if name in name_set:
-                aminos.append(name_data[name_data['sequence'] == name]['amino'].tolist()[0])
-                names.append(name_data[name_data['sequence'] == name]['gene'].tolist()[0])
-            else:
-                if verbose:
-                    print('No data in name file for',name)
-                aminos.append('No data')
-                names.append('No data')
-                missing_names += 1
-
-        all_amino.append(aminos)
-        col_order.append(column)
-
-        os.chdir(base_dir+'output/')
-        output = pd.DataFrame({'gene':names,'sequence':sequence_names,'amino':aminos},index=np.arange(len(aminos)))
-        output = output[['gene','sequence','amino']]
-        output.to_csv(file.split('genes',1)[0]+'_aminos.csv',header=False,index=False)
+    pool = ThreadPool(len(name_files))
+    out = pool.starmap(name_parse, zip(name_files, repeat(shared_file),repeat(orgnum),repeat(base_dir)))
+    for i in range(len(out)):
+        all_amino.append(out[i][0])
+        col_order.append(out[i][2])
+    names = out[0][1]
 
     shared_wnames = pd.DataFrame({'Core Gene Name':names})
     shared_wnames.to_csv('core_names.csv',index=False)
