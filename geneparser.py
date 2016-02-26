@@ -304,6 +304,8 @@ def gnames(orgnum,orgstring,base_dir,input):
         all_amino.append(out[i][0])
         col_order.append(out[i][2])
     names = out[0][1]
+    pool.close()
+    pool.join()
 
     shared_wnames = pd.DataFrame({'Core Gene Name':names})
     shared_wnames.to_csv('core_names.csv',index=False)
