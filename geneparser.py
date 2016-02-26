@@ -1,10 +1,28 @@
-import numpy as np
 import csv
 from datetime import datetime
-import pandas as pd
 import os
 import glob
 import sys
+from multiprocessing import Pool as ThreadPool
+from itertools import repeat
+
+#Functions
+def long_substr(data):
+    substr = ''
+    if len(data) > 1 and len(data[0]) > 0:
+        for i in range(len(data[0])):
+            for j in range(len(data[0])-i+1):
+                if j > len(substr) and all(data[0][i:i+j] in x for x in data):
+                    substr = data[0][i:i+j]
+    return substr
+def extract(genome,base_dir):
+    os.chdir(base_dir+'/rawdata')
+    with open(genome,'rU') as csvfile:
+        reader = csv.reader(csvfile,delimiter=',',dialect=csv.excel_tab)
+        m=list(reader)
+        odata=np.array(m).astype('object')
+    string = long_substr(odata[1:,0])
+    return string
 
 #Sort method
 def sort(startTime):
@@ -67,23 +85,9 @@ def gene_lcs(genomes,base_dir):
         print('Organism substrings already calculated')
     else:
         print('Finding common substrings')
-        #define long substring function
-        def long_substr(data):
-            substr = ''
-            if len(data) > 1 and len(data[0]) > 0:
-                for i in range(len(data[0])):
-                    for j in range(len(data[0])-i+1):
-                        if j > len(substr) and all(data[0][i:i+j] in x for x in data):
-                            substr = data[0][i:i+j]
-            return substr
-        orgstring = []
-        for genome in genomes:
-            os.chdir(base_dir+'rawdata/')
-            with open(genome,'rU') as csvfile:
-                reader = csv.reader(csvfile,delimiter=',',dialect=csv.excel_tab)
-                m=list(reader)
-                odata=np.array(m).astype('object')
-            orgstring.append(long_substr(odata[1:,0]))
+        pool = ThreadPool(len(genomes))
+        orgstring = pool.starmap(extract,zip(genomes,repeat(base_dir)))
+
         #write orgstring file
         os.chdir(base_dir+'substrings/')
         with open('substrings.csv', 'w', newline='') as csvfile:
@@ -318,7 +322,7 @@ def gnames(orgnum,orgstring,base_dir,input):
 
 startTime = datetime.now()
 
-print('geneparser v1.62')
+print('geneparser v1.65')
 print(' ')
 
 # check for numpy and pandas modules
