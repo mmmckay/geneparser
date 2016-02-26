@@ -1,5 +1,4 @@
 # geneparser
-v1.7
 Gene parsing tool for finding shared genes across genomes  
 Requires python3, numpy, pandas  
 

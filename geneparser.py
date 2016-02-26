@@ -5,6 +5,7 @@ import glob
 import sys
 from multiprocessing import Pool as ThreadPool
 from itertools import repeat
+import argparse
 
 #Functions
 def long_substr(data):
@@ -52,7 +53,7 @@ def sort(startTime):
     if gn_filecount == rd_filecount and len(file_list) == 0:
         print('Files already sorted')
     elif gn_filecount == rd_filecount and len(file_list) > 0:
-        print('Files sorted in ',datetime.now() - startTime)
+        print('Sorting files... ',datetime.now() - startTime)
     elif gn_filecount != rd_filecount:
         print('Unequal sets of files')
         print('%s gene name files to %s raw data files'%(gn_filecount,rd_filecount))
@@ -84,7 +85,7 @@ def gene_lcs(genomes,base_dir):
     if len(orgstring) == len(genomes):
         print('Organism substrings already calculated')
     else:
-        print('Finding common substrings')
+        print('Finding common substrings...')
         pool = ThreadPool(len(genomes))
         orgstring = pool.starmap(extract,zip(genomes,repeat(base_dir)))
         pool.close()
@@ -188,7 +189,7 @@ def parse(orgstring,pivar,pcvar,evar,file,orgnum,base_dir,unwanted):
 
 #shared gene method
 def shared(orgnum, base_dir):
-    print('Compiling final shared list')
+    print('Compiling final shared list...')
     if not os.path.exists(base_dir+'output/'):
         os.makedirs(base_dir+'output/')
 
@@ -253,7 +254,7 @@ def shared(orgnum, base_dir):
 
 #Gene name matching method
 def gnames(orgnum,orgstring,base_dir,input):
-    print('Creating amino acid string files')
+    print('Creating amino acid string files...')
     shared_file = input
     os.chdir(base_dir+'genenames/')
     name_files = glob.glob('*.csv')
@@ -286,7 +287,8 @@ def gnames(orgnum,orgstring,base_dir,input):
                 aminos.append(name_data[name_data['sequence'] == name]['amino'].tolist()[0])
                 names.append(name_data[name_data['sequence'] == name]['gene'].tolist()[0])
             else:
-                print('No data in name file for',name)
+                if verbose:
+                    print('No data in name file for',name)
                 aminos.append('No data')
                 names.append('No data')
                 missing_names += 1
@@ -303,7 +305,7 @@ def gnames(orgnum,orgstring,base_dir,input):
     shared_wnames.to_csv('core_names.csv',index=False)
 
     #join aminos into single string
-    print('Creating concatenated amino acid string file')
+    print('Creating concatenated amino acid string file...')
     amino_strings = []
     for aminos in all_amino:
         string = ''.join(aminos)
@@ -321,7 +323,7 @@ def gnames(orgnum,orgstring,base_dir,input):
 
 startTime = datetime.now()
 
-print('geneparser v1.7')
+print('geneparser v1.71')
 print(' ')
 
 # check for numpy and pandas modules
@@ -367,6 +369,11 @@ if '-unw' in sys.argv:
     unwanted = True
 else:
     unwanted = False
+
+if '-v' in sys.argv:
+    verbose = True
+else:
+    verbose = False
 
 print('Percent identity cutoff set at ',pivar)
 print('Percent coverage cutoff set at ',pcvar)
