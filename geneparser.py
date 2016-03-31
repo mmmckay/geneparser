@@ -75,6 +75,10 @@ def sort(startTime):
         os.makedirs(gname_dir)
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
+    if not os.path.exists(base_dir+'shared/'):
+        os.makedirs(base_dir+'shared/')
+    if not os.path.exists(base_dir+'odata/'):
+        os.makedirs(base_dir+'odata/')
 
     #move files into new folders
     for file in file_list:
@@ -140,10 +144,6 @@ def gene_lcs(genomes,base_dir):
 #Parse method
 def parse(orgstring,pivar,pcvar,evar,file,orgnum,base_dir,unwanted):
     #Do loop for each file, apply cutoff and look for potential shared genes
-    if not os.path.exists(base_dir+'shared/'):
-        os.makedirs(base_dir+'shared/')
-    if not os.path.exists(base_dir+'odata/'):
-        os.makedirs(base_dir+'odata/')
 
     os.chdir(base_dir+'rawdata/')
     orig = pd.read_csv(file,names=['query','subject','pi','pc','e'],dtype={'pi':float, 'pc':float, 'e':float})
@@ -217,7 +217,7 @@ def parse(orgstring,pivar,pcvar,evar,file,orgnum,base_dir,unwanted):
                 for match in temp_list:
                     out_list.append(match)
 
-    output = np.reshape(out_list,(len(out_list)/orgnum,orgnum))
+    output = np.reshape(out_list,(int(len(out_list)/orgnum),int(orgnum)))
     output = pd.DataFrame(output,columns=[0]*orgnum)
 
     os.chdir(base_dir+'shared/')
@@ -308,6 +308,7 @@ def gnames(orgnum,orgstring,base_dir,input):
     pool.join()
 
     shared_wnames = pd.DataFrame({'Core Gene Name':names})
+    os.chdir(base_dir+'output/')
     shared_wnames.to_csv('core_names.csv',index=False)
 
     #join aminos into single string
@@ -329,7 +330,7 @@ def gnames(orgnum,orgstring,base_dir,input):
 
 startTime = datetime.now()
 
-print('geneparser v1.71')
+print('geneparser v1.75')
 print(' ')
 
 # check for numpy and pandas modules
