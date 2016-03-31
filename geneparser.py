@@ -94,7 +94,7 @@ def sort(startTime):
     if gn_filecount == rd_filecount and len(file_list) == 0:
         print('Files already sorted')
     elif gn_filecount == rd_filecount and len(file_list) > 0:
-        print('Sorting files... ',datetime.now() - startTime)
+        print('Sorting files... ')
     elif gn_filecount != rd_filecount:
         print('Unequal sets of files')
         print('%s gene name files to %s raw data files'%(gn_filecount,rd_filecount))
