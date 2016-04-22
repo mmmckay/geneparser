@@ -470,7 +470,7 @@ print(datetime.now()-startTime)
 print('')
 
 #parse for shared genes
-print('Parsing gene files...')
+print('Finding shared genes...')
 pool = ThreadPool(len(rd_files))
 pool.starmap(parse, zip(repeat(orgstring),repeat(pivar),repeat(pcvar),repeat(evar),rd_files,repeat(orgnum),repeat(base_dir),repeat(unwanted)))
 pool.close()
