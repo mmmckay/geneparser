@@ -61,6 +61,12 @@ def name_parse(file, shared_file, orgnum, base_dir):
     output.to_csv(file.split('genes',1)[0]+'_aminos.csv',header=False,index=False)
 
     return aminos, names, column
+def all_names(base_dir, gn_files):
+    os.chdir(base_dir+'genenames/')
+    namedf_list = []
+    for file in gn_files:
+        namedf_list.append(pd.read_csv(file, skiprows=1, names=['Name', 'ID', 'Sequence']))
+    return namedf_list
 
 #Sort method
 def sort(startTime):
@@ -328,9 +334,75 @@ def gnames(orgnum,orgstring,base_dir,input):
     output = output[['organism','aminos']]
     output.to_csv('all_aminos.csv',header=False,index=False)
 
+#Find unique genes
+def unique(orgstring, pivar, pcvar, evar, file, namedf_list):
+    if not os.path.exists(base_dir+'output/'):
+        os.makedirs(base_dir+'output/')
+
+    os.chdir(base_dir+'rawdata/')
+    orig = pd.read_csv(file,names=['query','subject','pi','pc','e'],dtype={'pi':float, 'pc':float, 'e':float})
+
+    #find matching orgstring
+    gene_sample = orig.ix[0, 'query']
+    for org in orgstring:
+        if org in gene_sample:
+            gene_org = org
+
+    cut_data = orig[(orig['pi'] >= pivar) & (orig['pc'] >= pcvar) & (orig['e'] <= evar)]
+    gene_list = cut_data['query'].tolist()
+    uniques_ids = []
+    unique_names = []
+    duplicates = []
+
+    for gene in gene_list:
+        org_count_list = []
+        match_list = cut_data[cut_data['query'] == gene]['subject'].tolist()
+        if len(match_list) == 1:
+            uniques_ids.append(gene)
+        else:
+            if gene not in duplicates:
+                count = 0
+                for org in orgstring:
+                    for match in match_list:
+                        if org in match:
+                            org_count_list.append(org)
+                if org_count_list.count(gene_org) == len(org_count_list):
+                    count += 1
+                    uniques_ids.append(gene)
+                    for match in match_list:
+                        if match != gene:
+                            duplicates.append(match)
+    print('{} duplicates'.format(len(duplicates)))
+
+    #find name file
+    checked_indices = []
+    os.chdir(base_dir+'genenames/')
+    for i, name_file in enumerate(namedf_list):
+        if i not in checked_indices:
+            name_check = name_file.ix[0, 'ID']
+            if gene_org in name_check.replace(' ','_'):
+                id_list = name_file['ID'].tolist()
+                fixed_ids = []
+                for id in id_list:
+                    fixed_ids.append(id.replace(' ', '_'))
+                name_file['Fixed ID'] = pd.Series(fixed_ids, index = name_file.index)
+                checked_indices.append(i)
+                for id in uniques_ids:
+                    if id in fixed_ids:
+                        unique_names.append(name_file[name_file['Fixed ID'] == id]['Name'].tolist()[0])
+                    else:
+                        unique_names.append('No reference name')
+
+    os.chdir(base_dir+'output/')
+    uni_df = pd.DataFrame({'Name': unique_names,'ID': uniques_ids},index=list(range(len(uniques_ids))))
+    uni_df.to_csv(file+'_uniques.csv',header=False,index=False)
+    print(file)
+    print('{} duplicates'.format(len(duplicates)))
+    print('{} total unique genes'.format(len(unique_names)))
+
 startTime = datetime.now()
 
-print('geneparser v1.75')
+print('geneparser v1.8')
 print(' ')
 
 # check for numpy and pandas modules
@@ -388,7 +460,7 @@ print('Expected value cutoff set at ',evar)
 print('')
 
 #run sort
-rd_files, orgnum, gn_file, data_dir, base_dir = sort(startTime)
+rd_files, orgnum, gn_files, data_dir, base_dir = sort(startTime)
 print(datetime.now()-startTime)
 print('')
 
@@ -403,6 +475,16 @@ pool = ThreadPool(len(rd_files))
 pool.starmap(parse, zip(repeat(orgstring),repeat(pivar),repeat(pcvar),repeat(evar),rd_files,repeat(orgnum),repeat(base_dir),repeat(unwanted)))
 pool.close()
 pool.join()
+print(datetime.now()-startTime)
+print('')
+
+#Find uniques
+print('Finding unique genes...')
+namedf_list = all_names(base_dir,gn_files)
+pool2 = ThreadPool(len(rd_files))
+pool2.starmap(unique, zip(repeat(orgstring), repeat(pivar), repeat(pcvar), repeat(evar), rd_files, repeat(namedf_list)))
+pool2.close()
+pool2.join()
 print(datetime.now()-startTime)
 print('')
 
