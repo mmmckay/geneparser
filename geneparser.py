@@ -228,7 +228,7 @@ def parse(orgstring,pivar,pcvar,evar,file,orgnum,base_dir,unwanted):
 
     os.chdir(base_dir+'shared/')
     output.to_csv(file.split('vs',1)[0]+'_shared.csv',header=False,index=False)
-    print(file, 'parsed')
+    print(file, 'parsed for shared genes')
 
 #shared gene method
 def shared(orgnum, base_dir):
@@ -360,7 +360,7 @@ def unique(orgstring, pivar, pcvar, evar, file, namedf_list):
         if len(match_list) == 1:
             uniques_ids.append(gene)
         else:
-            if gene not in duplicates:
+            if gene not in duplicates and gene not in uniques_ids:
                 count = 0
                 for org in orgstring:
                     for match in match_list:
@@ -372,7 +372,6 @@ def unique(orgstring, pivar, pcvar, evar, file, namedf_list):
                     for match in match_list:
                         if match != gene:
                             duplicates.append(match)
-    print('{} duplicates'.format(len(duplicates)))
 
     #find name file
     checked_indices = []
@@ -396,13 +395,14 @@ def unique(orgstring, pivar, pcvar, evar, file, namedf_list):
     os.chdir(base_dir+'output/')
     uni_df = pd.DataFrame({'Name': unique_names,'ID': uniques_ids},index=list(range(len(uniques_ids))))
     uni_df.to_csv(file+'_uniques.csv',header=False,index=False)
-    print(file)
-    print('{} duplicates'.format(len(duplicates)))
-    print('{} total unique genes'.format(len(unique_names)))
+    print(file, 'parsed for unique genes')
+    if verbose == True:
+        print('{} duplicates'.format(len(duplicates)))
+        print('{} total unique genes'.format(len(unique_names)))
 
 startTime = datetime.now()
 
-print('geneparser v1.8')
+print('geneparser v1.81')
 print(' ')
 
 # check for numpy and pandas modules
