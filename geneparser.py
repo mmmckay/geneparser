@@ -231,7 +231,7 @@ def parse(orgstring,pivar,pcvar,evar,file,orgnum,base_dir,unwanted):
     print(file, 'parsed for shared genes')
 
 #shared gene method
-def shared(orgnum, base_dir):
+def shared(orgnum, base_dir, pivar, pcvar):
     print('Compiling final shared list...')
     if not os.path.exists(base_dir+'output/'):
         os.makedirs(base_dir+'output/')
@@ -291,6 +291,10 @@ def shared(orgnum, base_dir):
 
     print('%s total shared genes'%len(final_output))
     os.chdir(base_dir+'output/')
+    if parameter_file == True:
+        with open('parameter_file.csv', 'a') as param_file:
+            param_file.write('{}, {}, {}\n'.format(pivar, pcvar, len(final_output)))
+
     checked_output.to_csv('output.csv',header=False,index=False)
 
     return checked_output
@@ -454,6 +458,16 @@ if '-v' in sys.argv:
 else:
     verbose = False
 
+if '-u' in sys.argv:
+    uniques = True
+else:
+    uniques = False
+
+if '-pof' in sys.argv:
+    parameter_file = True
+else:
+    parameter_file = False
+
 print('Percent identity cutoff set at ',pivar)
 print('Percent coverage cutoff set at ',pcvar)
 print('Expected value cutoff set at ',evar)
@@ -479,17 +493,18 @@ print(datetime.now()-startTime)
 print('')
 
 #Find uniques
-print('Finding unique genes...')
-namedf_list = all_names(base_dir,gn_files)
-pool2 = ThreadPool(len(rd_files))
-pool2.starmap(unique, zip(repeat(orgstring), repeat(pivar), repeat(pcvar), repeat(evar), rd_files, repeat(namedf_list)))
-pool2.close()
-pool2.join()
-print(datetime.now()-startTime)
-print('')
+if uniques == True:
+    print('Finding unique genes...')
+    namedf_list = all_names(base_dir,gn_files)
+    pool2 = ThreadPool(len(rd_files))
+    pool2.starmap(unique, zip(repeat(orgstring), repeat(pivar), repeat(pcvar), repeat(evar), rd_files, repeat(namedf_list)))
+    pool2.close()
+    pool2.join()
+    print(datetime.now()-startTime)
+    print('')
 
 #find shared genes
-output = shared(orgnum,base_dir)
+output = shared(orgnum,base_dir, pivar, pcvar)
 print(datetime.now()-startTime)
 print('')
 
