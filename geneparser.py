@@ -166,7 +166,7 @@ def parse(orgstring,pivar,pcvar,evar,file,orgnum,base_dir,unwanted):
     os.chdir(base_dir+'odata/')
     new_data.to_csv(file.split('vs',1)[0]+'_occ.csv',header=False,index=False)
 
-    #remove organism that are unwanted
+    #remove organisms that are unwanted
     if unwanted == True:
         sub_list = new_data['subject'].tolist()
         orgindex = []
@@ -455,19 +455,31 @@ else:
 
 if '-v' in sys.argv:
     verbose = True
+    print('Verbose printout is on')
 else:
     verbose = False
 
 if '-u' in sys.argv:
     uniques = True
+    print('Finding unique genes is on')
 else:
     uniques = False
 
 if '-pof' in sys.argv:
     parameter_file = True
+    print('Parameter file output is on')
 else:
     parameter_file = False
 
+if '-t' in sys.argv:
+    try:
+        threads = int(sys.argv[sys.argv.index('-t')+1])
+        print('Number of threads set to {}'.format(threads))
+    except ValueError:
+        print('Number of threads invalid, defaulting to 1')
+        threads = 1
+
+print('')
 print('Percent identity cutoff set at ',pivar)
 print('Percent coverage cutoff set at ',pcvar)
 print('Expected value cutoff set at ',evar)
@@ -485,7 +497,7 @@ print('')
 
 #parse for shared genes
 print('Finding shared genes...')
-pool = ThreadPool(len(rd_files))
+pool = ThreadPool(threads)
 pool.starmap(parse, zip(repeat(orgstring),repeat(pivar),repeat(pcvar),repeat(evar),rd_files,repeat(orgnum),repeat(base_dir),repeat(unwanted)))
 pool.close()
 pool.join()
@@ -496,7 +508,7 @@ print('')
 if uniques == True:
     print('Finding unique genes...')
     namedf_list = all_names(base_dir,gn_files)
-    pool2 = ThreadPool(len(rd_files))
+    pool2 = ThreadPool(threads)
     pool2.starmap(unique, zip(repeat(orgstring), repeat(pivar), repeat(pcvar), repeat(evar), rd_files, repeat(namedf_list)))
     pool2.close()
     pool2.join()
