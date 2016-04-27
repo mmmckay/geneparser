@@ -290,6 +290,9 @@ def shared(orgnum, base_dir, pivar, pcvar):
         checked_output.loc[n] = [sorted(list(final_output[n]))[i] for i in range(orgnum)]
 
     print('%s total shared genes'%len(final_output))
+    make_aminos = True
+    if len(final_output) == 0:
+        make_aminos = False
     os.chdir(base_dir+'output/')
     if parameter_file == True:
         with open('parameter_file.csv', 'a') as param_file:
@@ -297,10 +300,10 @@ def shared(orgnum, base_dir, pivar, pcvar):
 
     checked_output.to_csv('output.csv',header=False,index=False)
 
-    return checked_output
+    return checked_output, make_aminos
 
 #Gene name matching method
-def gnames(orgnum,orgstring,base_dir,input):
+def gnames(orgnum,orgstring,base_dir,input,threads):
     print('Creating amino acid string files...')
     shared_file = input
     os.chdir(base_dir+'genenames/')
@@ -308,7 +311,7 @@ def gnames(orgnum,orgstring,base_dir,input):
     all_amino = []
     col_order = []
 
-    pool = ThreadPool(len(name_files))
+    pool = ThreadPool(threads)
     out = pool.starmap(name_parse, zip(name_files, repeat(shared_file),repeat(orgnum),repeat(base_dir)))
     for i in range(len(out)):
         all_amino.append(out[i][0])
@@ -406,7 +409,7 @@ def unique(orgstring, pivar, pcvar, evar, file, namedf_list):
 
 startTime = datetime.now()
 
-print('geneparser v1.81')
+print('geneparser v1.86')
 print(' ')
 
 # check for numpy and pandas modules
@@ -516,10 +519,13 @@ if uniques == True:
     print('')
 
 #find shared genes
-output = shared(orgnum,base_dir, pivar, pcvar)
+output, make_aminos = shared(orgnum,base_dir, pivar, pcvar)
 print(datetime.now()-startTime)
 print('')
 
-#make shared gene name files
-gnames(orgnum,orgstring,base_dir,output)
+if make_aminos:
+    #make shared gene name files
+    gnames(orgnum,orgstring,base_dir,output,threads)
+else:
+    print('No shared genes, ending program')
 print('Parsing finished in',datetime.now()-startTime)
