@@ -69,8 +69,8 @@ def all_names(base_dir, gn_files):
     return namedf_list
 
 #Sort method
-def sort(startTime):
-    base_dir = os.getcwd()+'/'
+def sort(startTime, base_dir):
+    base_dir = base_dir+'/'
     gname_dir = base_dir+'genenames/'
     data_dir = base_dir+'rawdata/'
     os.chdir(base_dir)
@@ -426,14 +426,21 @@ except ImportError:
 
 # get pivar, pcvar and evar from sys.argv, check if they are in the correct range
 try:
-    pivar = float(sys.argv[1])
+    base_dir = str(sys.argv[1])
+    os.chdir(base_dir)
+except FileNotFoundError:
+    print('No such directory {}'.format(base_dir))
+    sys.exit()
+try:
+    pivar = float(sys.argv[2])
     if pivar < 0 or pivar > 100:
         print('Percent identity must be a number between 0 and 100')
         sys.exit()
 except ValueError:
     print('Percent identity must be a number between 0 and 100')
+    sys.exit()
 try:
-    pcvar = float(sys.argv[2])
+    pcvar = float(sys.argv[3])
     if pcvar < 0 or pcvar > 100:
         print('Percent coverage must be a number between 0 and 100')
         sys.exit()
@@ -441,7 +448,7 @@ except ValueError:
     print('Percent coverage must be a number between 0 and 100')
     sys.exit()
 try:
-    evar = float(sys.argv[3])
+    evar = float(sys.argv[4])
     if evar < 0:
         print('Expected value must be greater than 0')
         sys.exit()
@@ -475,12 +482,15 @@ else:
     parameter_file = False
 
 if '-t' in sys.argv:
+    threads = 1
     try:
         threads = int(sys.argv[sys.argv.index('-t')+1])
         print('Number of threads set to {}'.format(threads))
     except ValueError:
         print('Number of threads invalid, defaulting to 1')
         threads = 1
+else:
+    threads = 1
 
 print('')
 print('Percent identity cutoff set at ',pivar)
@@ -489,7 +499,7 @@ print('Expected value cutoff set at ',evar)
 print('')
 
 #run sort
-rd_files, orgnum, gn_files, data_dir, base_dir = sort(startTime)
+rd_files, orgnum, gn_files, data_dir, base_dir = sort(startTime,base_dir)
 print(datetime.now()-startTime)
 print('')
 
