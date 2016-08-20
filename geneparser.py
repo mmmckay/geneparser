@@ -425,14 +425,16 @@ except ImportError:
     sys.exit()
 
 # get pivar, pcvar and evar from sys.argv, check if they are in the correct range
+arg_locations = 1
 try:
     base_dir = str(sys.argv[1])
     os.chdir(base_dir)
 except FileNotFoundError:
-    print('No such directory {}'.format(base_dir))
-    sys.exit()
+    print('No valid directory specified, running in current directory')
+    base_dir = os.getcwd()
+    arg_locations = 0
 try:
-    pivar = float(sys.argv[2])
+    pivar = float(sys.argv[1+arg_locations])
     if pivar < 0 or pivar > 100:
         print('Percent identity must be a number between 0 and 100')
         sys.exit()
@@ -440,7 +442,7 @@ except ValueError:
     print('Percent identity must be a number between 0 and 100')
     sys.exit()
 try:
-    pcvar = float(sys.argv[3])
+    pcvar = float(sys.argv[2+arg_locations])
     if pcvar < 0 or pcvar > 100:
         print('Percent coverage must be a number between 0 and 100')
         sys.exit()
@@ -448,7 +450,7 @@ except ValueError:
     print('Percent coverage must be a number between 0 and 100')
     sys.exit()
 try:
-    evar = float(sys.argv[4])
+    evar = float(sys.argv[3+arg_locations])
     if evar < 0:
         print('Expected value must be greater than 0')
         sys.exit()

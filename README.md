@@ -14,8 +14,10 @@ Naming convention ex: S204_genes.csv for the S204 genome
 
 The gene db_xref should be the same format as the names appearing in the 'query' and 'subject' columns of the rawdata file  
 
-Run with  
-$ python3 geneparser.py /folder/containing/files 75 100 .0001  
+Run with:  
+$ python3 geneparser.py /User/raw 75 100 .0001  
+
+Run in directory of raw folder to sample use  
 
 The numbers specify percent identity, percent coverage and e-value cutoffs  
 
