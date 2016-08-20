@@ -19,7 +19,7 @@ $ python3 geneparser.py /User/raw 75 100 .0001
 
 Run in directory of raw folder to sample use  
 
-The numbers specify percent identity, percent coverage and e-value cutoffs  
+Will run in current directory if no directory is specified, the numbers specify percent identity, percent coverage and e-value cutoffs  
 
 Additonal commands  
 -unw Specifies that the user has included only some of the files from the vsAll BLAST  
