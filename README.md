@@ -17,7 +17,7 @@ The gene db_xref should be the same format as the names appearing in the 'query'
 Run with:  
 $ python3 geneparser.py /User/raw 75 100 .0001  
 
-Run in directory of raw folder to sample use    
+Run in directory of raw folder to sample use  
 
 The numbers specify percent identity, percent coverage and e-value cutoffs  
 
