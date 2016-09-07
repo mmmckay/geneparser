@@ -409,7 +409,7 @@ def unique(orgstring, pivar, pcvar, evar, file, namedf_list):
 
 startTime = datetime.now()
 
-print('geneparser v1.86')
+print('geneparser v1.86d')
 print(' ')
 
 # check for numpy and pandas modules
