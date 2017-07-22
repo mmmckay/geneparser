@@ -138,6 +138,13 @@ def gene_lcs(genomes,base_dir):
         pool.close()
         pool.join()
 
+        # Check for substring overlap, ie one substring that completelt contains another
+        for index,org in enumerate(orgstring):
+            overlap = any([org in other_org for other_org in orgstring[:index]+orgstring[index+1:]])
+
+        if overlap:
+            exit("Gene name prefixes are not unique")
+
         #write orgstring file
         os.chdir(base_dir+'substrings/')
         with open('substrings.csv', 'w', newline='') as csvfile:
