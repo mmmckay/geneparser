@@ -1,28 +1,69 @@
-# geneparser
+# Geneparser
 Gene parsing tool for finding shared genes across genomes  
-Requires python3, numpy, pandas  
 
-Takes 2 files per genome, which can be generated using build_blast.py (experimental):  
+## Prerequisites
+Python 3.6+
+NCBI blastp (available in $PATH)
+NCBI makeblastdb (available in $PATH)
 
-1) A rawdata .csv file containing a single genome BLASTed against all other desired genome  
-Rawdata columns are 'query', 'subject', 'Percent Identity', 'Percent Coverage', 'E-value'  
-Naming convention ex: S204vsAll.csv for the S204 genome  
+## Install
+- Clone this repository
+    `git clone https://github.com/mmmckay/geneparser.git`
+- Enter the directory
+    `cd geneparser`
+- Install the required Python packages
+    `pip3.6 install -r requirements.txt`
 
-2) A gene name .csv file which specifies information about each genome  
-Genename columns are 'Gene Name', 'Gene db_xref', 'Amino acid string for gene'  
-Naming convention ex: S204_genes.csv for the S204 genome   
+## Input
+Geneparser takes in 2 files per genome  
+1. A rawdata .csv file containing a single genome BLASTed against all other desired genome  
+    Rawdata columns are 'query', 'subject', 'Percent Identity', 'Percent Coverage', 'E-value'  
+    Naming convention ex: S204vsall.csv for the S204 genome  
 
-The gene db_xref should be the same format as the names appearing in the 'query' and 'subject' columns of the rawdata file  
+2. A gene name .csv file which specifies information about each genome  
+    Genename columns are 'Gene Name', 'locus_tag', 'Amino acid string'  
+    Naming convention ex: S204_genes.csv for the S204 genome   
+    The gene locus_tag should be the same format as the names appearing in the 'query' and 'subject' columns of the rawdata file 
 
-Run with:  
-$ python3 geneparser.py /User/raw 75 100 .0001  
+## Output
+#### Basic output
+1. `core_genome.csv` - Contains rows of genes that shared across all submitted genomes
+2. `core_names.csv` - Rows matching `core_genome.csv` that contain the gene names of the core genome
+3. `all_aminos.csv` - A concatenated amino acid string of each shared gene from each genome
+4. `genome_aminos.csv` - Rows matching `core_genome.csv` with the unique amino acid strings from each genome
 
-Run in directory of raw folder to sample use  
+#### Optional
+1. `values_list.csv` - Output of all calculated values from geneparser runs, can be plotted
+2. `core_pan.csv` - Output of core and pan genome sizes when incrementally adding genomes into the set, can be plotted
 
-Will run in current directory if no directory is specified, the numbers specify percent identity, percent coverage and e-value cutoffs   
+## Usage
+The most basic run of geneparser.py is simple, just specify the input directory with -d  
+`python3.6 geneparser.py -d /location/of/raw/data`  
+This will calculate the shared genome at the default cutoffs (90/90/.0001) and place the results in `/location/of/raw/data/output`
 
-Additonal commands  
--unw Specifies that the user has included only some of the files from the vsAll BLAST  
--v Verbose command, incomplete  
--pof Creates an output file that appends PI, PC and shared genes after each run, useful if you need to look at shared gene variation over multiple runs  
--t select the number of threads for the analysis to run with (experimental)  
+#### Flags
+-h, --help                  - show this help message and exit
+-i, --percent-identity      - Percent identity cutoff for core genome
+-c, --percent-coverage      - Percent coverage cutoff for core genome
+-e, --expected-value        - Expected value cutoff for core genome
+-p, --pan-genome            - Construct pan genome as part of output
+-v, --verbose               - Increase output verbosity
+-s, --save-gp               - Save gp file for test runs (takes a while)
+-g, --core-pan-progression  - Generate csv of core and pan genome progression sizes
+-u, --unique                - Generate list of uniques
+-l, --list-values           - Append all found values w/ cutoffs to csv for graphing
+-w, --overwrite-list        - Overwrite a previous values list
+-x, --core-pan-intersection - Calculate intersection of core and pan genome
+-r, --rule-out-similar      - Don't rule out similar genes from the same genome
+-o, --output                - Desired output folder location
+-d, --input-directory       - Folder containing raw data, output will be placed here as well if -o is not passed
+
+## Utils
+
+Extra scripts to expand usage and functionality of Geneparser
+
+### genbank_build_blast.py
+
+Creates the raw data files taken in by geneparser.py from raw `.gb` and `.gbk` files
+
+ 
