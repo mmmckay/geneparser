@@ -2,9 +2,9 @@
 Gene parsing tool for finding shared genes across genomes  
 
 ## Prerequisites
-Python 3.6+
-NCBI blastp (available in $PATH)
-NCBI makeblastdb (available in $PATH)
+Python 3.6+  
+NCBI blastp (available in $PATH)  
+NCBI makeblastdb (available in $PATH)  
 
 ## Install
 - Clone this repository
