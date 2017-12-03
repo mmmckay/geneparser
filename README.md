@@ -66,4 +66,8 @@ Extra scripts to expand usage and functionality of Geneparser
 
 Creates the raw data files taken in by geneparser.py from raw `.gb` and `.gbk` files
 
+### gp_plot.py
+
+Creates some nice plots/graphs with the output of geneparser
+
  
