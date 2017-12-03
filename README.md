@@ -30,11 +30,13 @@ Geneparser takes in 2 files per genome
 1. `core_genome.csv` - Contains rows of genes that shared across all submitted genomes
 2. `core_names.csv` - Rows matching `core_genome.csv` that contain the gene names of the core genome
 3. `all_aminos.csv` - A concatenated amino acid string of each shared gene from each genome
-4. `genome_aminos.csv` - Rows matching `core_genome.csv` with the unique amino acid strings from each genome
+4. `{genome}_aminos.csv` - Rows matching `core_genome.csv` with the unique amino acid strings from each genome
 
 #### Optional
 1. `values_list.csv` - Output of all calculated values from geneparser runs, can be plotted
 2. `core_pan.csv` - Output of core and pan genome sizes when incrementally adding genomes into the set, can be plotted
+3. `pan_genome.csv` - Matrix of presence for the pan genome, per gene
+4. `pan_genome_concat.csv` - Concat of pan genome presence for each organism
 
 ## Usage
 The most basic run of geneparser.py is simple, just specify the input directory with -d  
