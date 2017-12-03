@@ -1,9 +1,7 @@
 import os
 from collections import defaultdict
 import glob
-import matplotlib.pyplot as plt
 import numpy as np
-from scipy.optimize import curve_fit
 import dill
 import pickle
 import datetime
@@ -11,7 +9,6 @@ import argparse
 import hashlib
 import sys
 import time
-import numpy as np
 
 VERSION = "2.1.1"
 
@@ -342,6 +339,35 @@ def create_output(core_genome, pan_genome, core_pan_counts, unique, overlap_coun
             core_output.write(",".join(sorted(list(core_gene_group))))
             core_output.write("\n")
 
+    # pan output
+    pan_genome_processed = []
+    with open("output/pan_genome.csv", "w") as pan_output, open("output/pan_genome_concat.csv", "w") as pan_concat:
+        for pan_gene_group in pan_genome:
+            size = 0
+            item_list = []
+            for gene_set in sorted(list(raw_parse["gene_sets"])):
+                found = False
+                for item in pan_gene_group:
+                    if item in raw_parse["gene_sets"][gene_set]:
+                        found = True
+                if found:
+                    item_list.append("1")
+                    size += 1
+                else:
+                    item_list.append("0")
+            pan_genome_processed.append({"size": size, "items": item_list})
+        pan_sorted = sorted(pan_genome_processed, key=lambda k: k["size"], reverse=True)
+        # make outputs
+        transposed = defaultdict(list)
+        gene_list = sorted([item.lstrip("rawdata/").rstrip("vsall.csv") for item in list(raw_parse["gene_sets"])])
+        pan_output.write(f"{','.join(gene_list)}\n")
+        for line in pan_sorted:
+            pan_output.write(f"{','.join(line['items'])}\n")
+            for n, item in enumerate(line["items"]):
+                transposed[gene_list[n]].append(item)
+        for genome in gene_list:
+            pan_concat.write(f"{genome},{''.join(transposed[genome])}\n")
+
     # gene name files, name file and all aminos file
     # trim filenames from raw
     gene_name_files = {}
@@ -439,6 +465,7 @@ def main():
         verbose_print(f"Core/Pan genome intersection size: {overlap_count}")
 
     # generate core output
+    verbose_print("Generating output...")
     create_output(core_genome, pan_genome, core_pan_counts, unique, overlap_count, raw_parse)
 
     verbose_print(f"Elapsed time: {round(time.time() - start_time, 2)}s")

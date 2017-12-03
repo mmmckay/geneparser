@@ -27,8 +27,6 @@ def prepare_directories():
     gbk_files = glob.glob('*.gb*')
     for file in gbk_files:
         os.rename(file, os.path.join("genbank", file))
-    os.chdir(base+'/genbanks')
-    gbk_files = glob.glob('*.gb*')
 
     return
 
