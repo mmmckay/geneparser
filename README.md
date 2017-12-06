@@ -44,21 +44,23 @@ The most basic run of geneparser.py is simple, just specify the input directory 
 This will calculate the shared genome at the default cutoffs (90/90/.0001) and place the results in `/location/of/raw/data/output`
 
 #### Flags
--h, --help                  - show this help message and exit  
--i, --percent-identity      - Percent identity cutoff for core genome  
--c, --percent-coverage      - Percent coverage cutoff for core genome  
--e, --expected-value        - Expected value cutoff for core genome  
--p, --pan-genome            - Construct pan genome as part of output  
--v, --verbose               - Increase output verbosity  
--s, --save-gp               - Save gp file for test runs (takes a while)  
--g, --core-pan-progression  - Generate csv of core and pan genome progression sizes  
--u, --unique                - Generate list of uniques  
--l, --list-values           - Append all found values w/ cutoffs to csv for graphing  
--w, --overwrite-list        - Overwrite a previous values list  
--x, --core-pan-intersection - Calculate intersection of core and pan genome  
--r, --rule-out-similar      - Don't rule out similar genes from the same genome  
--o, --output                - Desired output folder location  
--d, --input-directory       - Folder containing raw data, output will be placed here as well if -o is not passed  
+| Flag | Description |
+| --- | --- |
+`-h`, `--help` | Show this help message and exit  
+`-i`, `--percent-identity` | Percent identity cutoff for core genome  
+`-c`, `--percent-coverage` | Percent coverage cutoff for core genome  
+`-e`, `--expected-value` | Expected value cutoff for core genome  
+`-p`, `--pan-genome` | Construct pan genome as part of output  
+`-v`, `--verbose` | Increase output verbosity  
+`-s`, `--save-gp`  | Save gp file for test runs (takes a while)  
+`-g`, `--core-pan-progression` | Generate csv of core and pan genome progression sizes`  
+`-u`, `--unique` | Generate list of uniques  
+`-l`, `--list-values` | Append all found values w/ cutoffs to csv for graphing  
+`-w`, `--overwrite-list` | Overwrite a previous values list  
+`-x`, `--core-pan-intersection` | Calculate intersection of core and pan genome  
+`-r`, `--rule-out-similar` | Don't rule out similar genes from the same genome  
+`-o`, `--output` | Desired output folder location  
+`-d`, `--input-directory` | Folder containing raw data, output will be placed here as well if -o is not passed  
 
 ## Utils
 
