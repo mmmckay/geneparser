@@ -10,7 +10,7 @@ import hashlib
 import sys
 import time
 
-VERSION = "2.1.1"
+VERSION = "2.1.3"
 
 def verbose_print(text, end="\n"):
     if flags.verbose:
@@ -386,6 +386,14 @@ def create_output(core_genome, pan_genome, core_pan_counts, unique, overlap_coun
                 if gene in raw_parse["gene_sets"][genome]:
                     gene_order.append(genome)
         break
+
+    # print out uniques
+    if flags.unique:
+        for unique_genome in unique:
+            file_name_fixed = unique_genome.lstrip('rawdata/').rstrip('vsall.csv')
+            with open(f"output/{file_name_fixed}_unique.csv", "w") as file:
+                for match in unique[unique_genome]:
+                    file.write(f"{match}\n")
 
     all_aminos = defaultdict(str)
     with open("output/core_names.csv", "w") as core_names:
